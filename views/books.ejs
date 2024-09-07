@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>書籍列表</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center my-4">書籍管理</h1>
+
+        <!-- 新增書籍按鈕 -->
+        <div class="row mb-3">
+            <div class="col text-start">
+                <a href="/" class="btn btn-secondary">返回首頁</a>
+            </div>
+            <div class="col text-end">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBookModal">新增書籍</button>
+            </div>
+        </div>
+
+        <!-- 書籍列表 -->
+        <h2>書籍列表</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>書名</th>
+                    <th>作者</th>
+                    <th>出版社</th>
+                    <th>出版日期</th>
+                    <th>新增日期</th>
+                    <th>更新日期</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% books.forEach(book => { %>
+                    <tr>
+                        <td><%= book.id %></td>
+                        <td><%= book.title %></td>
+                        <td><%= book.author %></td>
+                        <td><%= book.publisher %></td>
+                        <td><%= book.published_date %></td>
+                        <td><%= book.created_at %></td>
+                        <td><%= book.updated_at %></td>
+                        <td>
+                            <button class="btn btn-success update-book" data-id="<%= book.id %>" data-title="<%= book.title %>" data-author="<%= book.author %>" data-publisher="<%= book.publisher %>" data-published_date="<%= book.published_date %>" data-bs-toggle="modal" data-bs-target="#updateModal">更新</button>
+                            <button class="btn btn-danger delete-book" data-id="<%= book.id %>">刪除</button>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 新增書籍modal -->
+    <div class="modal fade" id="addBookModal" tabindex="-1" aria-labelledby="addBookModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addBookModalLabel">新增書籍</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-book-form">
+                        <div class="mb-3">
+                            <label for="book-title" class="form-label">書名</label>
+                            <input type="text" class="form-control" id="book-title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="book-author" class="form-label">作者</label>
+                            <input type="text" class="form-control" id="book-author" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="book-publisher" class="form-label">出版社</label>
+                            <input type="text" class="form-control" id="book-publisher" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="book-published-date" class="form-label">出版日期</label>
+                            <input type="date" class="form-control" id="book-published-date" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">保存</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 更新書籍modal -->
+    <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateModalLabel">更新書籍</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="update-book-form">
+                        <input type="hidden" id="update-id">
+                        <div class="mb-3">
+                            <label for="update-title" class="form-label">書名</label>
+                            <input type="text" class="form-control" id="update-title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="update-author" class="form-label">作者</label>
+                            <input type="text" class="form-control" id="update-author" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="update-publisher" class="form-label">出版社</label>
+                            <input type="text" class="form-control" id="update-publisher" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="update-published-date" class="form-label">出版日期</label>
+                            <input type="date" class="form-control" id="update-published-date" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">保存更改</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-text">
+        Produced by Jay Fung
+    </div>
+    
+
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        // 新增書籍
+        $('#add-book-form').submit(function(e) {
+            e.preventDefault();
+            const title = $('#book-title').val();
+            const author = $('#book-author').val();
+            const publisher = $('#book-publisher').val();
+            const published_date = $('#book-published-date').val();
+
+            $.ajax({
+                url: '/books',
+                method: 'POST',
+                data: { title, author, publisher, published_date },
+                success: function(data) {
+                    if (data.success) {
+                        alert('新增書籍成功');
+                        location.reload(); // 成功後重新加載頁面
+                    }
+                },
+                error: function(xhr) {
+                    const data = xhr.responseJSON;
+                    if (data.message === 'book already exists') {
+                        alert('書籍已存在');
+                    } else {
+                        alert('新增書籍失敗');
+                    }
+                }
+            });
+        });
+
+
+        // 更新書籍
+        $('.update-book').click(function() {
+            const id = $(this).data('id');
+            const title = $(this).data('title');
+            const author = $(this).data('author');
+            const publisher = $(this).data('publisher');
+            const published_date = $(this).data('published_date');
+            
+            // 將資料填入modal的表單
+            $('#update-id').val(id);
+            $('#update-title').val(title);
+            $('#update-author').val(author);
+            $('#update-publisher').val(publisher);
+            $('#update-published-date').val(published_date);
+        });
+
+        // 提交更新表單
+        $('#update-book-form').submit(function(e) {
+            e.preventDefault();
+            const id = $('#update-id').val();
+            const title = $('#update-title').val();
+            const author = $('#update-author').val();
+            const publisher = $('#update-publisher').val();
+            const published_date = $('#update-published-date').val();
+
+            $.ajax({
+                url: `/books/${id}`,
+                method: 'PUT',
+                data: { title, author, publisher, published_date },
+                success: function(data) {
+                    if (data.success) {
+                        alert('更新書籍成功');
+                        location.reload();
+                    } else if (data.message === 'book not found') {
+                        alert('書籍不存在');
+                    } else {
+                        alert('更新書籍失敗');
+                    }
+                }
+            });
+        });
+
+        // 刪除書籍
+        $('.delete-book').click(function() {
+            const id = $(this).data('id');
+
+            if (confirm('確定要刪除此書籍嗎？')) {
+                $.ajax({
+                    url: `/books/${id}`,
+                    method: 'DELETE',
+                    success: function(data) {
+                        if (data.success) {
+                            alert('刪除書籍成功');
+                            $(`#book-${id}`).remove();
+                            location.reload();
+                        } else {
+                            alert('刪除書籍失敗');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

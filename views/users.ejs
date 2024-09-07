@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用戶管理</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="text-center my-4">用戶管理</h1>
+
+        <!-- 新增用戶按鈕 -->
+        <div class="row mb-3">
+            <div class="col text-start">
+                <a href="/" class="btn btn-secondary">返回首頁</a>
+            </div>
+            <div class="col text-end">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">新增用戶</button>
+            </div>
+        </div>
+
+        <!-- 新增用戶modal -->
+        <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addUserModalLabel">新增用戶</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="new-user-form">
+                            <div class="mb-3">
+                                <label for="new-name" class="form-label">名稱</label>
+                                <input type="text" class="form-control" id="new-name" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="new-email" class="form-label">電子郵件</label>
+                                <input type="email" class="form-control" id="new-email" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="new-phone_number" class="form-label">電話號碼</label>
+                                <input type="text" class="form-control" id="new-phone_number" name="phone_number" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">保存</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 用戶列表 -->
+        <h2>用戶列表</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>名稱</th>
+                    <th>電子郵件</th>
+                    <th>電話號碼</th>
+                    <th>新增時間</th>
+                    <th>更新時間</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% users.forEach(user => { %>
+                    <tr>
+                        <td><%= user.id %></td>
+                        <td><%= user.name %></td>
+                        <td><%= user.email %></td>
+                        <td><%= user.phone_number %></td>
+                        <td><%= user.created_at %></td>
+                        <td><%= user.updated_at %></td>
+                        <td>
+                            <button class="btn btn-success update-user" data-id="<%= user.id %>" data-name="<%= user.name %>" data-email="<%= user.email %>" data-phone_number="<%= user.phone_number %>" data-bs-toggle="modal" data-bs-target="#updateModal">更新</button>
+                            <button class="btn btn-danger delete-user" data-id="<%= user.id %>">刪除</button>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 更新用戶modal -->
+    <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateModalLabel">更新用戶</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="update-user-form">
+                        <input type="hidden" id="update-id">
+                        <div class="mb-3">
+                            <label for="update-name" class="form-label">名稱</label>
+                            <input type="text" class="form-control" id="update-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="update-email" class="form-label">電子郵件</label>
+                            <input type="email" class="form-control" id="update-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="update-phone_number" class="form-label">電話號碼</label>
+                            <input type="text" class="form-control" id="update-phone_number" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">保存更改</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-text">
+        Produced by Jay Fung
+    </div>
+    
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery -->
+
+    <script>
+        // 新增用戶
+        $('#new-user-form').submit(function(e) {
+            e.preventDefault();
+            const name = $('#new-name').val();
+            const email = $('#new-email').val();
+            const phone_number = $('#new-phone_number').val();
+
+            $.ajax({
+                url: '/users',
+                method: 'POST',
+                data: { name, email, phone_number },
+                success: function(data) {
+                    if (data.success) {
+                        alert('新增用戶成功');
+                        location.reload();
+                    }
+                },
+                error: function(xhr) {
+                    const data = xhr.responseJSON;
+                    if (data.message === 'user already exists') {
+                        alert('用戶已存在');
+                    } else {
+                        alert('新增用戶失敗');
+                    }
+                }
+            });
+        });
+
+        // 當用戶點擊“更新”按鈕時，將資料載入到modal中
+        $('.update-user').click(function() {
+            const id = $(this).data('id');
+            const name = $(this).data('name');
+            const email = $(this).data('email');
+            const phone_number = $(this).data('phone_number');
+            
+            // 將資料填入modal中的表單
+            $('#update-id').val(id);
+            $('#update-name').val(name);
+            $('#update-email').val(email);
+            $('#update-phone_number').val(phone_number);
+        });
+
+        // 提交更新表單
+        $('#update-user-form').submit(function(e) {
+            e.preventDefault();
+            const id = $('#update-id').val();
+            const name = $('#update-name').val();
+            const email = $('#update-email').val();
+            const phone_number = $('#update-phone_number').val();
+
+            $.ajax({
+                url: `/users/${id}`,
+                method: 'PUT',
+                data: { name, email, phone_number },
+                success: function(data) {
+                    console.log(data);
+                    if (data.success) {
+                        alert('更新用戶成功');
+                        location.reload();
+                    } else if(data.message === 'user not found') {
+                        alert('用戶不存在');
+                    } else {
+                        alert('更新用戶失敗');
+                    }
+                }
+            });
+        });
+
+        // 刪除用戶
+        $('.delete-user').click(function() {
+            const id = $(this).data('id');
+            
+            if (confirm('確定要刪除此用戶嗎？')) {
+                $.ajax({
+                    url: `/users/${id}`,
+                    method: 'DELETE',
+                    success: function(data) {
+                        if (data.success) {
+                            alert('刪除用戶成功');
+                            $(`#user-${id}`).remove();
+                            location.reload();
+                        } else if(data.message === 'user not found') {
+                            alert('用戶不存在');
+                        } else {
+                            alert('刪除用戶失敗');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

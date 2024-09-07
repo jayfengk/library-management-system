@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>借閱紀錄</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center my-4">借閱紀錄</h1>
+
+        <!-- 返回首頁按鈕 -->
+        <div class="row mb-3">
+            <div class="col text-start">
+                <a href="/" class="btn btn-secondary">返回首頁</a>
+            </div>
+        </div>
+
+        <!-- 借閱紀錄清單 -->
+        <h2>借閱紀錄清單</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>借閱人</th>
+                    <th>書籍</th>
+                    <th>借閱日期</th>
+                    <th>歸還日期</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% borrows.forEach(borrow => { %>
+                    <tr>
+                        <td><%= borrow.id %></td>
+                        <td><%= borrow.name %></td>
+                        <td><%= borrow.title %></td>
+                        <td><%= borrow.borrow_date %></td>
+                        <td><%= borrow.return_date %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer-text">
+        Produced by Jay Fung
+    </div>
+    
+</body>
+</html>
