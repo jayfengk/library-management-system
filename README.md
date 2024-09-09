@@ -8,4 +8,4 @@
    DB_NAME=library
 
    API_TOKEN=<你的TOKEN>
-5. 執行nodemon app.js
+5. 執行npm start
