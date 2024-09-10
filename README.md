@@ -1,4 +1,4 @@
-1. 執行./config/library.sql內容建立3個talbe
+1. 執行./config/library.sql內容建立schema和3個talbe
 2. 執行npm install
 3. 執行node generateToken.js產生API接收端所需之TOKEN
 4. 新建一個.env檔加入以下內容
