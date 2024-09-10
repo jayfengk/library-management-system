@@ -1,3 +1,6 @@
+-- 建立 schema
+CREATE SCHEMA `library` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+
 -- 建立的 Users 表
 CREATE TABLE library.users (
     id INT AUTO_INCREMENT PRIMARY KEY,
